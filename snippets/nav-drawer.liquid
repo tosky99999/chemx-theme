@@ -1,0 +1,148 @@
+<div class="nav-drawer">
+<div class="drawer__header">
+  <div class="drawer__title h3">{{ 'layout.drawers.browse' | t }}</div>
+  <div class="drawer__close js-drawer-close">
+    {% include 'icon-close' %}
+  </div>
+</div>
+
+<div class="nav-search-wrapper border-bottom">
+  <form class="search search-bar__form" action="/search" method="get" role="search">
+    <button class="search-bar__submit search__submit btn--link" type="submit">
+      {% include 'icon-search' %}
+      <span class="icon__fallback-text">{{ 'general.search.submit' | t }}</span>
+    </button>
+    <input class="search__input search-bar__input" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'general.search.placeholder' | t }}" aria-label="{{ 'general.search.placeholder' | t }}">
+  </form>
+</div>
+
+{% comment %}
+<nav class="mobile-nav-wrapper large-up--hide" role="navigation">
+{% endcomment %}
+
+<nav class="large-up--hide" role="navigation">
+  <ul id="MobileNav" class="mobile-nav border-bottom">
+
+    {% for link in linklists.main-menu.links %}
+      {%- assign outerLoopIndex = forloop.index -%}
+      {%- assign child_list_handle = link.title | handleize -%}
+
+      <li class="mobile-nav__item{% unless forloop.last %} border-bottom{% endunless %}">
+        {% if linklists[child_list_handle].links != blank %}
+          <button type="button" class="btn--link js-toggle-submenu mobile-nav__link" data-target="{{ child_list_handle }}-{{ outerLoopIndex }}" data-level="1">
+            <span>{{ link.title }}</span>
+            <div class="mobile-nav__icon fa">
+              {% include 'icon-chevron-right' %}
+              <span class="icon__fallback-text">{{ 'layout.navigation.expand' | t }}</span>
+            </div>
+          </button>
+          <ul class="border-top mobile-nav__dropdown" data-parent="{{ child_list_handle }}-{{ outerLoopIndex }}" data-level="2">
+
+            {% for childlink in linklists[child_list_handle].links %}
+              {% assign grand_child_list_handle = childlink.title | handle %}
+              {% assign scroll_hash = '' %}
+            
+              {% unless childlink.title contains 'View' %}
+                {% assign scroll_hash =  childlink.title | handleize | prepend: '#subcat-' %}
+              {% else %}
+                {% assign scroll_hash = ''%}
+              {% endunless %}
+
+              <li class="mobile-nav__item{% unless forloop.last %} border-bottom{% endunless %}">
+                {% if linklists[grand_child_list_handle].links != blank %}
+                  <button type="button" class="btn--link js-toggle-submenu mobile-nav__link mobile-nav__sublist-link" data-target="{{ grand_child_list_handle }}-{{ outerLoopIndex }}-{{ forloop.index }}">
+                    <span>{{ childlink.title }}</span>
+                    <div class="mobile-nav__icon fa">
+                      {% include 'icon-chevron-right' %}
+                      <span class="icon__fallback-text">{{ 'layout.navigation.expand' | t }}</span>
+                    </div>
+                  </button>
+                  <ul class="border-top mobile-nav__dropdown sub_child_dropdown" data-parent="{{ grand_child_list_handle }}-{{ outerLoopIndex }}-{{ forloop.index }}" data-level="3">
+                    {% for grandchildlink in linklists[grand_child_list_handle].links %}
+
+                      {% assign sub_scroll_hash = '' %}
+            
+                      {% unless grandchildlink.title contains 'View' %}
+                        {% assign sub_scroll_hash =  grandchildlink.title | handleize | prepend: '#subcat-' %}
+                      {% else %}
+                        {% assign sub_scroll_hash = ''%}
+                      {% endunless %}
+
+                      <li class="mobile-nav__item{% unless forloop.last %} border-bottom{% endunless %}">
+                        <a href="{{ grandchildlink.url | append: sub_scroll_hash }}"  data-scroll-id="{{ sub_scroll_hash }}" class="mobile-nav__sublist-link">
+                          {{ grandchildlink.title | escape }}
+                        </a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <a href="{{ childlink.url | append: scroll_hash }}" data-scroll-id="{{ scroll_hash }}" class="mobile-nav__sublist-link">
+                    {{ childlink.title | escape }}
+                  </a>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <a href="{{ link.url }}" class="mobile-nav__link">
+            {{ link.title }}
+          </a>
+        {% endif %}
+      </li>
+    {% endfor %}
+
+    {% comment %}
+    {% for link in linklists.support.links %}
+      <li class="mobile-nav__item {% if forloop.first %} border-top {% endif %} border-bottom">
+        <a href="{{ link.url }}" class="{{">
+          {{ link.title }}
+        </a>
+      </li>
+    {% endfor %}
+    {% endcomment %}
+
+    {% comment %}
+      If customer accounts are enabled, provide login and create account links
+      Don't use atm.
+    {% if shop.customer_accounts_enabled %}
+      {% if customer %}
+        <li class="mobile-nav__item border-bottom">
+          {% if customer.first_name != blank %}
+            {% capture first_name %}{{ customer.first_name }}{% endcapture %}
+            <a href="/account">{{ 'layout.customer.logged_in_as_html' | t: first_name: first_name }}</a>
+          {% else %}
+            <a href="/account">{{ 'layout.customer.account' | t }}</a>
+          {% endif %}
+        </li>
+        <li class="mobile-nav__item border-bottom">
+          {{ 'layout.customer.log_out' | t | customer_logout_link }}
+        </li>
+      {% else %}
+        <li class="mobile-nav__item border-bottom">
+          {{ 'layout.customer.log_in' | t | customer_login_link }}
+        </li>
+        <li class="mobile-nav__item border-bottom">
+          {{ 'layout.customer.create_account' | t | customer_register_link }}
+        </li>
+      {% endif %}
+    {% endif %}
+    
+    {% endcomment %}
+  </ul>
+
+  
+</nav>
+
+<ul class="custom-items-wrapper">
+  <li class="mobile-nav__item custom-items border-top">
+    <a href="/account" class="btn-account"><i class="fa fa-user-circle-o" aria-hidden="true"></i>Your online account</a>
+  </li>
+  <li class="mobile-nav__item custom-items">
+    <a href="#" class="btn-email"><i class="fa fa-envelope"></i>Email Us</a>
+  </li>
+  <li class="mobile-nav__item custom-items">
+    <a href="#" class="btn-phone"><i class="fa fa-phone" aria-hidden="true"></i>(800) 624-5403</a>
+  </li>
+</ul>
+
+</div>

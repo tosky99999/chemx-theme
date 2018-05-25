@@ -1,0 +1,340 @@
+// original 
+/*
+(function (algolia, instantsearch) {
+  if (!algolia.full_results || !algolia.config.instant_search_enabled) return;
+
+  var _ = algolia._,
+      $ = algolia.jQuery;
+
+  algolia.config.results_selector += ', .algolia-shopify-instantsearch';
+
+  var $hiding = $('<style>' + algolia.config.results_selector + ' { visibility: hidden }</style>');
+  $hiding.appendTo($('head'));
+
+  var instant = algolia.instantsearch = {
+    colors: algolia.config.colors,
+    distinct: !!algolia.config.show_products,
+    facets: {
+      hidden: algolia.hiddenFacets,
+      shown: algolia.shownFacets,
+      list: algolia.facets,
+      widgets: algolia.facetsWidgets
+    },
+    hitsPerPage: algolia.config.products_full_results_hits_per_page,
+    poweredBy: algolia.config.powered_by,
+    search: instantsearch({
+      appId: algolia.config.app_id,
+      apiKey: algolia.config.search_api_key,
+      indexName: '' + algolia.config.index_prefix + 'products',
+      urlSync: {},
+      searchFunction: function (searchFunctionHelper) {
+        // Set query parameters here because they're not kept when someone
+        // presses the Back button if set in the `init` function of a custom widget
+        var helper = instant.search.helper;
+        var page = helper.getPage();
+        helper.setQueryParameter('highlightPreTag', '<span class="ais-highlight">');
+        helper.setQueryParameter('highlightPostTag', '</span>');
+        helper.setQueryParameter('distinct', instant.distinct);
+        helper.setPage(page);
+        searchFunctionHelper.search();
+      }
+    }),
+    selector: algolia.config.results_selector + ', .algolia-shopify-instantsearch',
+    sortOrders: algolia.sortOrders,
+    storeName: algolia.storeName,
+    templates: {
+      currentItem: algolia.getTemplate('instant_search_current_refined_values_item'),
+      empty: algolia.getTemplate('instant_search_no_result'),
+      page: algolia.compileTemplate('instant_search'),
+      product: algolia.getTemplate('instant_search_product'),
+      stats: algolia.getTemplate('instant_search_stats'),
+      style: algolia.compileTemplate('instant_search.css')
+    }
+  };
+
+  if (instant.poweredBy) {
+    console.log('Algolia: Instant-Search');
+  }
+
+  function readjust() {
+    var width = instant.$results.outerWidth();
+
+    var suffix = 'lg';
+    if (width < 400) suffix = 'xs';
+    else if (width < 800) suffix = 'sm';
+    else if (width < 1200) suffix = 'md';
+
+    instant.$results
+      .removeClass('ais-results-size-xs')
+      .removeClass('ais-results-size-sm')
+      .removeClass('ais-results-size-md')
+      .removeClass('ais-results-size-lg')
+      .addClass('ais-results-size-' + suffix);
+  }
+
+  // Bind helpers
+  _.forEach(Object.assign({}, algolia.helpers, algolia.translation_helpers), function (helper, name) {
+    instant.search.templatesConfig.helpers[name] = helper;
+  });
+  instant.search.templatesConfig.compileOptions = algolia.hoganOptions;
+
+  algolia.appendStyle(algolia.render(instant.templates.style, {
+    distinct: instant.distinct,
+    colors: instant.colors
+  }));
+
+  $(document).ready(function () {
+    instant.$results = $(instant.selector);
+
+    instant.$results.html(algolia.render(instant.templates.page, {
+      facets: instant.facets.list,
+      storeName: instant.storeName,
+      translations: algolia.translations
+    }));
+
+    readjust();
+
+    $(window).resize(function () {
+      readjust();
+    });
+
+    // Mobile facets display
+    instant.search.addWidget({
+      init: function (opts) {
+        var $button = $('.ais-facets-button');
+        $button.on('click', function () {
+          var $facets = $('.ais-facets');
+
+          if ($facets.hasClass('ais-facets__shown')) {
+            $button.text('Show filters');
+            $facets.removeClass('ais-facets__shown');
+          } else {
+            $button.text('Hide filters');
+            $facets.addClass('ais-facets__shown');
+          }
+        });
+      }
+    });
+
+    // Search input
+    instant.search.addWidget(
+      instantsearch.widgets.searchBox({
+        container: '.ais-search-box-container',
+        placeholder: algolia.translations.searchForProduct,
+        poweredBy: false
+      })
+    );
+
+    // Logo & clear
+    instant.search.addWidget({
+      init: function (opts) {
+        if (!instant.poweredBy) {
+          $('.ais-algolia-icon').hide();
+        }
+        $('.ais-clear-input-icon').on('click', function () {
+          opts.helper.setQuery('').search();
+          $('.ais-search-box--input').val('').focus();
+        });
+      },
+      render: function (opts) {
+        if (!opts.state.query) {
+          if (instant.poweredBy) {
+            $('.ais-algolia-icon').show();
+          }
+          $('.ais-clear-input-icon').hide();
+        } else {
+          $('.ais-clear-input-icon').show();
+          $('.ais-algolia-icon').hide();
+        }
+      }
+    });
+
+    // Stats
+    instant.search.addWidget(
+      instantsearch.widgets.stats({
+        container: '.ais-stats-container',
+        templates: {
+          body: instant.templates.stats,
+        },
+        transformData: {
+          body: function (data) {
+            data.processingTimeS = data.processingTimeMS / 1000;
+            data.start = data.page * data.hitsPerPage + 1;
+            data.end = Math.min((data.page + 1) * data.hitsPerPage, data.nbHits);
+            data.translations = algolia.translations;
+            return data;
+          }
+        }
+      })
+    );
+
+    // Sort orders
+    instant.search.addWidget(
+      instantsearch.widgets.sortBySelector({
+        container: '.ais-sort-orders-container',
+        indices: instant.sortOrders
+      })
+    );
+
+    // Change display
+    instant.search.addWidget({
+      init: function (opts) {
+        $('.ais-search-header').on('click', '.ais-change-display-block', function () {
+          $('.ais-change-display-block:not(.ais-change-display-selected)').addClass('ais-change-display-selected');
+          $('.ais-change-display-list.ais-change-display-selected').removeClass('ais-change-display-selected');
+          $('.ais-results-as-list').removeClass('ais-results-as-list').addClass('ais-results-as-block');
+        });
+        $('.ais-search-header').on('click', '.ais-change-display-list', function () {
+          $('.ais-change-display-list:not(.ais-change-display-selected)').addClass('ais-change-display-selected');
+          $('.ais-change-display-block.ais-change-display-selected').removeClass('ais-change-display-selected');
+          $('.ais-results-as-block').removeClass('ais-results-as-block').addClass('ais-results-as-list');
+        });
+      }
+    });
+
+    // Hidden facets
+    var list = _.map(instant.facets.hidden, function (facet) { return facet.name; });
+    instant.search.addWidget({
+      getConfiguration: function () {
+        return {
+          facets: list,
+          disjunctiveFacets: list
+        };
+      },
+      init: function () {}
+    });
+
+    // Current refined values
+    var attributes = _.map(instant.facets.shown, function (facet) {
+      return {
+        name: facet.name,
+        label: facet.title
+      }
+    });
+    instant.search.addWidget(
+      instantsearch.widgets.currentRefinedValues({
+        container: '.ais-current-refined-values-container',
+        cssClasses: {
+          root: 'ais-facet',
+          header: 'ais-facet--header',
+          body: 'ais-facet--body'
+        },
+        templates: {
+          header: algolia.translations.selectedFilter,
+          item: instant.templates.currentItem,
+          clearAll: algolia.translations.clearAll
+        },
+        onlyListedAttributes: true,
+        attributes: attributes
+      })
+    );
+
+    // Facets
+    _.forEach(instant.facets.widgets, function (widget) {
+      instant.search.addWidget(instantsearch.widgets[widget.name](widget.params));
+    });
+
+    // Hits
+    instant.search.addWidget(
+      instantsearch.widgets.hits({
+        container: '.ais-hits-container',
+        hitsPerPage: instant.hitsPerPage,
+        templates: {
+          empty: instant.templates.empty,
+          item: instant.templates.product
+        },
+        transformData: {
+          item: function (product) {
+            product._distinct = instant.distinct;
+            product.can_order = (
+              product.inventory_management !== 'shopify' ||
+              product.inventory_policy === 'continue' ||
+              product.inventory_quantity > 0
+            );
+            product.translations = algolia.translations;
+            return product;
+          },
+          empty: function (params) {
+            params.translations = algolia.translations;
+            return params;
+          }
+        }
+      })
+    );
+
+    // Redirect to product on click
+    instant.search.addWidget({
+      init: function (opts) {
+        $('.ais-hits-container').on('click', '.ais-hit', function (e) {
+          var $this = $(this),
+              handle = $this.attr('data-handle'),
+              variant_id = $this.attr('data-variant-id')
+              distinct = $this.attr('data-distinct');
+
+          var link = '/products/' + handle;
+          if (distinct !== 'true') {
+            link += '?variant=' + variant_id;
+          }
+          window.location.href = link;
+        });
+        $('.ais-hits-container').on('click', '.ais-hit a', function (e) {
+          e.stopPropagation();
+        });
+      }
+    });
+
+    // Add to cart
+    instant.search.addWidget({
+      init: function (opts) {
+        $('.ais-hits-container').on('click', '.ais-hit--cart-button', function (e) {
+          e.stopPropagation();
+          var $this = $(this),
+              formId = $this.attr('data-form-id');
+
+          if (formId) {
+            document.getElementById(formId).submit();
+          }
+        });
+      }
+    });
+
+    // No result actions
+    instant.search.addWidget({
+      init: function (opts) {
+        $('.ais-hits-container').on('click', '.ais-hit-empty--clear-filters', function () {
+          var helper = opts.helper;
+          helper.clearTags();
+          _.forEach(instant.facets.list, function (facet) {
+            helper.clearRefinements(facet.name);
+          });
+          helper.search();
+        });
+
+        $('.ais-hits-container').on('click', '.ais-hit-empty--clear-input', function () {
+          opts.helper.setQuery('').search();
+          $('.ais-search-box--input').val('').focus();
+        });
+      }
+    });
+
+    // Pagination
+    instant.search.addWidget(
+      instantsearch.widgets.pagination({
+        container: '.ais-pagination-container',
+        padding: 2,
+        maxPages: 20
+      })
+    );
+
+    // Main
+    instant.search.start();
+
+    $hiding.remove();
+  });
+}(algoliaShopify, instantsearch));
+
+*/
+
+// Minified version
+!function(e,s){if(e.full_results&&e.config.instant_search_enabled){var t=e._,a=e.jQuery;e.config.results_selector+=", .algolia-shopify-instantsearch";var i=a("<style>"+e.config.results_selector+" { visibility: hidden }</style>");i.appendTo(a("head"));var n=e.instantsearch={colors:e.config.colors,distinct:!!e.config.show_products,facets:{hidden:e.hiddenFacets,shown:e.shownFacets,list:e.facets,widgets:e.facetsWidgets},hitsPerPage:e.config.products_full_results_hits_per_page,poweredBy:e.config.powered_by,search:s({appId:e.config.app_id,apiKey:e.config.search_api_key,indexName:e.config.index_prefix+"products",urlSync:{},searchFunction:function(e){var s=n.search.helper,t=s.getPage();s.setQueryParameter("highlightPreTag",'<span class="ais-highlight">'),s.setQueryParameter("highlightPostTag","</span>"),s.setQueryParameter("distinct",n.distinct),s.setPage(t),e.search()}}),selector:e.config.results_selector+", .algolia-shopify-instantsearch",sortOrders:e.sortOrders,storeName:e.storeName,templates:{currentItem:e.getTemplate("instant_search_current_refined_values_item"),empty:e.getTemplate("instant_search_no_result"),page:e.compileTemplate("instant_search"),product:e.getTemplate("instant_search_product"),stats:e.getTemplate("instant_search_stats"),style:e.compileTemplate("instant_search.css")}};n.poweredBy&&console.log("Algolia: Instant-Search"),t.forEach(Object.assign({},e.helpers,e.translation_helpers),function(e,s){n.search.templatesConfig.helpers[s]=e}),n.search.templatesConfig.compileOptions=e.hoganOptions,e.appendStyle(e.render(n.templates.style,{distinct:n.distinct,colors:n.colors})),a(document).ready(function(){n.$results=a(n.selector),n.$results.html(e.render(n.templates.page,{facets:n.facets.list,storeName:n.storeName,translations:e.translations})),r(),a(window).resize(function(){r()}),n.search.addWidget({init:function(e){var s=a(".ais-facets-button");s.on("click",function(){var e=a(".ais-facets");e.hasClass("ais-facets__shown")?(s.text("Show filters"),e.removeClass("ais-facets__shown")):(s.text("Hide filters"),e.addClass("ais-facets__shown"))})}}),n.search.addWidget(s.widgets.searchBox({container:".ais-search-box-container",placeholder:e.translations.searchForProduct,poweredBy:!1})),n.search.addWidget({init:function(e){n.poweredBy||a(".ais-algolia-icon").hide(),a(".ais-clear-input-icon").on("click",function(){e.helper.setQuery("").search(),a(".ais-search-box--input").val("").focus()})},render:function(e){e.state.query?(a(".ais-clear-input-icon").show(),a(".ais-algolia-icon").hide()):(n.poweredBy&&a(".ais-algolia-icon").show(),a(".ais-clear-input-icon").hide())}}),n.search.addWidget(s.widgets.stats({container:".ais-stats-container",templates:{body:n.templates.stats},transformData:{body:function(s){return s.processingTimeS=s.processingTimeMS/1e3,s.start=s.page*s.hitsPerPage+1,s.end=Math.min((s.page+1)*s.hitsPerPage,s.nbHits),s.translations=e.translations,s}}})),n.search.addWidget(s.widgets.sortBySelector({container:".ais-sort-orders-container",indices:n.sortOrders})),n.search.addWidget({init:function(e){a(".ais-search-header").on("click",".ais-change-display-block",function(){a(".ais-change-display-block:not(.ais-change-display-selected)").addClass("ais-change-display-selected"),a(".ais-change-display-list.ais-change-display-selected").removeClass("ais-change-display-selected"),a(".ais-results-as-list").removeClass("ais-results-as-list").addClass("ais-results-as-block")}),a(".ais-search-header").on("click",".ais-change-display-list",function(){a(".ais-change-display-list:not(.ais-change-display-selected)").addClass("ais-change-display-selected"),a(".ais-change-display-block.ais-change-display-selected").removeClass("ais-change-display-selected"),a(".ais-results-as-block").removeClass("ais-results-as-block").addClass("ais-results-as-list")})}});var c=t.map(n.facets.hidden,function(e){return e.name});n.search.addWidget({getConfiguration:function(){return{facets:c,disjunctiveFacets:c}},init:function(){}});var o=t.map(n.facets.shown,function(e){return{name:e.name,label:e.title}});n.search.addWidget(s.widgets.currentRefinedValues({container:".ais-current-refined-values-container",cssClasses:{root:"ais-facet",header:"ais-facet--header",body:"ais-facet--body"},templates:{header:e.translations.selectedFilter,item:n.templates.currentItem,clearAll:e.translations.clearAll},onlyListedAttributes:!0,attributes:o})),t.forEach(n.facets.widgets,function(e){n.search.addWidget(s.widgets[e.name](e.params))}),n.search.addWidget(s.widgets.hits({container:".ais-hits-container",hitsPerPage:n.hitsPerPage,templates:{empty:n.templates.empty,item:n.templates.product},transformData:{item:function(s){return s._distinct=n.distinct,s.can_order="shopify"!==s.inventory_management||"continue"===s.inventory_policy||s.inventory_quantity>0,s.translations=e.translations,s},empty:function(s){return s.translations=e.translations,s}}})),n.search.addWidget({init:function(e){a(".ais-hits-container").on("click",".ais-hit",function(e){var s=a(this),t=s.attr("data-handle"),i=s.attr("data-variant-id");distinct=s.attr("data-distinct");var n="/products/"+t;"true"!==distinct&&(n+="?variant="+i),window.location.href=n}),a(".ais-hits-container").on("click",".ais-hit a",function(e){e.stopPropagation()})}}),n.search.addWidget({init:function(e){a(".ais-hits-container").on("click",".ais-hit--cart-button",function(e){e.stopPropagation();var s=a(this).attr("data-form-id");s&&document.getElementById(s).submit()})}}),n.search.addWidget({init:function(e){a(".ais-hits-container").on("click",".ais-hit-empty--clear-filters",function(){var s=e.helper;s.clearTags(),t.forEach(n.facets.list,function(e){s.clearRefinements(e.name)}),s.search()}),a(".ais-hits-container").on("click",".ais-hit-empty--clear-input",function(){e.helper.setQuery("").search(),a(".ais-search-box--input").val("").focus()})}}),n.search.addWidget(s.widgets.pagination({container:".ais-pagination-container",padding:2,maxPages:20})),n.search.start(),i.remove()})}function r(){var e=n.$results.outerWidth(),s="lg";e<400?s="xs":e<800?s="sm":e<1200&&(s="md"),n.$results.removeClass("ais-results-size-xs").removeClass("ais-results-size-sm").removeClass("ais-results-size-md").removeClass("ais-results-size-lg").addClass("ais-results-size-"+s)}}(algoliaShopify,instantsearch);
+

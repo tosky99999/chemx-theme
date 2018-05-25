@@ -1,0 +1,162 @@
+{% comment %}
+** List of collections - homepage partial **
+- Draggable section
+- Uses blocks
+{% endcomment %}
+
+<style type="text/css">
+  {% if section.settings.bg_color %}
+  .collection-list-banner .banner {
+    background-color: {{ section.settings.bg_color }};
+  }
+  {% endif %}
+</style>
+
+<div class="banner lazyload js medium-up--hide"
+     {% if section.settings.image != blank %}
+     data-bgset="{% include 'bgset', image: section.settings.image %}"
+     data-sizes="auto"
+     data-parent-fit="cover"
+     style="background-position: {{ section.settings.alignment }}; background-image: url('{{ section.settings.image | img_url: '300x300' }});"
+     {% endif %}>
+
+  {% comment %}
+  {% if section.settings.image == blank %}
+    <div class="placeholder-background">
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+    </div>
+  {% endif %}
+  {% endcomment %}
+
+    <div class="page-width">
+      <div class="list-collections">
+        {% if section.settings.title != blank %}
+          <h4 class="shop-title">
+            {{ section.settings.title }}
+          </h4>
+        {% endif %}
+
+        {% for link in linklists[section.settings.main_linklist].links %}
+
+          {%- assign child_list_handle = link.title | handleize -%}
+
+
+          {% comment %}
+          <li class="js-toggle-submenu product-wrap">
+            <a class="collection-info__caption " href="{{ link.url }}" itemprop="url">
+              <span class="title">{{ link.title }}</span>
+              <i class="fa fa-plus"></i>
+            </a>
+          </li>
+          {% endcomment %}
+
+          <li class="mobile-nav__item{% unless forloop.last %}{% endunless %}">
+            {% if linklists[child_list_handle].links != blank %}
+              <button type="button" class="title js-toggle-submenu mobile-nav__link" data-target="{{ child_list_handle }}-{{ outerLoopIndex }}" data-level="1">
+                {% capture category_icon %}icon-{{child_list_handle}}.png{% endcapture %}
+                <img src="{{ category_icon | asset_url }}" alt="Shop by Category Icon" class="icon-category">
+                <span>{{ link.title }}</span>
+                <div class="mobile-nav__icon fa">
+                  {% include 'icon-chevron-right' %}
+                  <span class="icon__fallback-text">{{ 'layout.navigation.expand' | t }}</span>
+                </div>
+              </button>
+              <ul class="mobile-nav__dropdown" data-parent="{{ child_list_handle }}-{{ outerLoopIndex }}" data-level="2">
+
+                {% for childlink in linklists[child_list_handle].links %}
+                  {% assign grand_child_list_handle = childlink.title | handle %}
+                  {% assign scroll_hash = '' %}
+                
+                  {% unless childlink.title contains 'View' %}
+                    {% assign scroll_hash =  childlink.title | handleize | prepend: '#subcat-' %}
+                  {% else %}
+                    {% assign scroll_hash = ''%}
+                  {% endunless %}
+
+                  <li class="mobile-nav__item{% unless forloop.last %}{% endunless %}">
+                    {% if linklists[grand_child_list_handle].links != blank %}
+                      <button type="button" class="title js-toggle-submenu mobile-nav__link mobile-nav__sublist-link" data-target="{{ grand_child_list_handle }}-{{ outerLoopIndex }}-{{ forloop.index }}">
+                        {{ childlink.title }}
+                        <div class="mobile-nav__icon fa">
+                          {% include 'icon-chevron-right' %}
+                          <span class="icon__fallback-text">{{ 'layout.navigation.expand' | t }}</span>
+                        </div>
+                      </button>
+                      <ul class="mobile-nav__dropdown sub_child_dropdown" data-parent="{{ grand_child_list_handle }}-{{ outerLoopIndex }}-{{ forloop.index }}" data-level="3">
+                        {% for grandchildlink in linklists[grand_child_list_handle].links %}
+
+                          {% assign sub_scroll_hash = '' %}
+              
+                          {% unless grandchildlink.title contains 'View' %}
+                            {% assign sub_scroll_hash =  grandchildlink.title | handleize | prepend: '#subcat-' %}
+                          {% else %}
+                            {% assign sub_scroll_hash = ''%}
+                          {% endunless %}
+
+                          <li class="mobile-nav__item{% unless forloop.last %}{% endunless %}">
+                            <a href="{{ grandchildlink.url | append: sub_scroll_hash }}"  data-scroll-id="{{ sub_scroll_hash }}" class="mobile-nav__sublist-link">
+                              {{ grandchildlink.title | escape }}
+                            </a>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    {% else %}
+                      <a href="{{ childlink.url | append: scroll_hash }}" data-scroll-id="{{ scroll_hash }}" class="mobile-nav__sublist-link">
+                        {{ childlink.title | escape }}
+                      </a>
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <a href="{{ link.url }}" class="title mobile-nav__link">
+                {% capture category_icon %}icon-{{child_list_handle}}.png{% endcapture %}
+                <img src="{{ category_icon | asset_url }}" alt="Shop by Category Icon" class="icon-category">
+                <span>{{ link.title }}</span>
+              </a>
+            {% endif %}
+          </li>
+
+        {% endfor %}
+
+      </div>
+    </div>
+</div>
+
+
+{% schema %}
+{
+  "name": "Collection list Banner",
+  "class": "collection-list-banner",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Banner Image",
+      "info": "750 x 750px recommended"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Banner Bg Color",
+      "default": "#000"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Collection list"
+    },
+    {
+      "type": "link_list",
+      "id": "main_linklist",
+      "label": "Menu",
+      "default": "main-menu"
+    }
+  ],
+  "presets": [{
+    "name": "Collection list Banner",
+    "category": "Collection"
+  }]
+}
+{% endschema %}

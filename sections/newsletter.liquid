@@ -1,0 +1,126 @@
+<div class="newsletter-section{% if section.settings.show_background %} index-section--newsletter-background{% endif %}">
+  <div class="page-width">
+    <div class="grid grid--flush-bottom">
+      <div class="grid__item large-up--one-half one-whole">
+        <div class="section-left">
+          {% if section.settings.section_title != blank %}
+            <label for="Email" class="h2">{{ section.settings.section_title | escape }}</label>
+          {% endif %}
+          {% if section.settings.subheading != blank %}
+            <p>{{ section.settings.subheading | escape }}</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="grid__item large-up--one-half one-whole">
+        {% if section.settings.newsletter_form_action == blank %}
+          {% form 'customer' %}
+            {{ form.errors | default_errors }}
+            {% if form.posted_successfully? %}
+              <p class="form--success">{{ 'general.newsletter_form.confirmation' | t }}</p>
+            {% else %}
+              <div class="input-group">
+                <input type="hidden" name="contact[tags]" value="newsletter">
+                <input type="email"
+                  name="contact[email]"
+                  id="Email"
+                  class="input-group__field newsletter__input"
+                  value="{% if customer %}{{ customer.email }}{% endif %}"
+                  placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}"
+                  autocorrect="off"
+                  autocapitalize="off">
+                <span class="input-group__btn">
+                  <button type="submit" class="btn newsletter__submit" name="commit" id="Subscribe">
+                    <span class="newsletter__submit-text--large">{{ 'general.newsletter_form.submit' | t }}</span>
+                  </button>
+                </span>
+              </div>
+            {% endif %}
+          {% endform %}
+        {% else %}
+          <div id="mc-embedded-subscribe-msg" style="display:none;"></div>
+            <form action="{{ section.settings.newsletter_form_action }}" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" target="_blank" class="">
+              <div class="input-group">
+                <input type="email" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}" name="EMAIL" id="Email" class="input-group__field newsletter__input" autocorrect="off" autocapitalize="off" required>
+                <span class="input-group__btn">
+                  <button type="submit" class="btn newsletter__submit" name="commit" id="Subscribe">
+                    <span class="newsletter__submit-text--large">{{ 'general.newsletter_form.submit' | t }}</span>
+                  </button>
+                </span>
+              </div>
+            </form>
+            <script>
+              $(function(){
+                var $mcForm = $('#mc-embedded-subscribe-form');
+                var $mcMsg = $('#mc-embedded-subscribe-msg');
+                $mcForm.on('submit', function (event) {
+                  event.preventDefault();
+                  $.ajax({
+                    type: 'GET',
+                    url: $mcForm.attr('action').replace('/post?', '/post-json?')+'&c=?',
+                    data: $mcForm.serialize(),
+                    cache: false,
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    error: function(err) {
+                      alert('Could not connect to the registration server. Please try again later.');
+                    },
+                    success: function(response) {
+                      $mcMsg.html(response.msg).find('a').attr('target', '_blank');
+                      if (response.result === 'success') {
+                        $mcMsg.addClass('form-success');
+                      } else {
+                        $mcMsg.addClass('errors');
+                      }
+                      $mcForm.slideUp('fast');
+                      $mcMsg.slideDown('fast');
+                    }
+                  });
+                });
+              });
+            </script>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Newsletter",
+    "class": "index-section no-ptop",
+    "settings": [
+      {
+        "type": "text",
+        "id": "section_title",
+        "label": "Heading",
+        "default": "Subscribe to our newsletter"
+      },
+      {
+        "type": "text",
+        "id": "subheading",
+        "label": "Subheading",
+        "default": "A short sentence describing what someone will receive by subscribing"
+      },
+      {
+        "id": "show_background",
+        "type": "checkbox",
+        "label": "Show background",
+        "default": true
+      },
+      {
+        "type": "paragraph",
+        "content": "Any customers who sign up will have an account created for them in Shopify. [View customers](/admin/customers?query=&accepts_marketing=1)"
+      },
+      {
+        "type": "text",
+        "id": "newsletter_form_action",
+        "label": "MailChimp form action URL",
+        "info": "[Find your MailChimp form action URL](https:\/\/docs.shopify.com\/manual\/configuration\/store-customization\/communicating-with-customers\/accounts-and-newsletters\/get-a-mailchimp-form-action-url)."
+      }
+    ],
+    "presets": [{
+      "name": "Newsletter",
+      "category": "Promotional"
+    }]
+  }
+{% endschema %}

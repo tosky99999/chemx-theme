@@ -1,0 +1,100 @@
+<div class="customer-testimonials">
+  <div class="page-width">
+    <div class="section-header">
+      <h3 class="">What customers are saying about &nbsp; 
+        <img src="{{ 'logo-chrome.png' | asset_img_url: '100x' }}"
+             class="lazyload js"
+             data-src="{{ 'logo-chrome.png' | asset_img_url: '300x' }}"
+             data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+             data-sizes="auto" />
+      </h3>
+    </div>
+    <!-- START Enoble Facebook Reviews for Shopify --> 
+    <div id="enb_fb-mountpoint" ></div> 
+    <!-- END Enoble Facebook Reviews for Shopify -->
+  </div>
+</div>
+
+<div class="hero hero--{{ section.settings.hero_size }} box ratio-container lazyload js"
+     {% if section.settings.image %}
+     data-bgset="{% include 'bgset', image: section.settings.image %}"
+     data-sizes="auto"
+     data-parent-fit="cover"
+     style="background-position: {{ section.settings.alignment }}; background-image: url('{{ section.settings.image | img_url: '300x300' }});"
+     {% endif %}>
+  {% if section.settings.image == blank %}
+    <div class="placeholder-background">
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+    </div>
+  {% endif %}
+  <div class="hero__inner">
+    <div class="page-width text-center">
+      {% if section.settings.title != blank %}
+        <div class="section-header">
+          <h2 class="h1 mega-title{% if section.settings.text_size == 'large' %} mega-title--large{% endif %}">{{ section.settings.title | escape }}</h2>
+        </div>
+      {% endif %}
+
+      <div class="sp__box"></div>
+        
+    </div>
+  </div>
+</div>
+
+<noscript>
+  <div class="hero hero--{{ section.settings.hero_size }}{% if section.settings.title != blank or section.settings.text != blank or section.settings.button_label != blank %} hero__overlay{% endif %}"{% if section.settings.image %} style="background-image: url('{{ section.settings.image | img_url: '2048x' }}'); background-position: center {{ section.settings.alignment }};"{% endif %}></div>
+</noscript>
+
+{% schema %}
+  {
+    "name": "Join the conversation",
+    "class": "index-section section-social-conversation",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Image"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Image with text overlay"
+      },
+      {
+        "type": "select",
+        "id": "hero_size",
+        "label": "Section height",
+        "default": "medium",
+        "options": [
+          {
+            "label": "Extra Small",
+            "value": "x-small"
+          },
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Medium",
+            "value": "medium"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          },
+          {
+            "label": "Extra Large",
+            "value": "x-large"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Join the conversation",
+        "category": "Social"
+      }
+    ]
+  }
+{% endschema %}

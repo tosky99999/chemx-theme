@@ -1,0 +1,273 @@
+{% comment %}
+** Footer - default view **
+- Static section
+- Uses blocks
+{% endcomment %}
+
+<footer class="footer">
+  <div class="page-width footer-menu-wrap">
+    <div class="grid">
+      <div class="grid__item one-whole">
+        <div class="loop-wrapper">
+          <h2>Free Shipping Over $50</h2>
+          <h3>No Code • 24/7</h3>
+          <div class="mountain"></div>
+          <div class="hill"></div>
+          <div class="tree"></div>
+          <div class="tree"></div>
+          <div class="tree"></div>
+          <div class="rock"></div>
+          <div class="truck"></div>
+          <div class="wheels"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid small--text-center">
+
+      {% capture grid__cls %}
+        {% if section.blocks.size == 3 %}one-quarter{% elsif section.blocks.size == 2 %}one-third{% else %}one-half{% endif %}
+      {% endcapture %}
+
+
+      {% if section.settings.image %}
+      <div class="footer-logo grid__item small--one-whole {{grid__cls}}">
+          <img  src="{{ section.settings.image | img_url: '100x' }}"
+                alt="{{ section.settings.image.alt | escape }}"
+                class="lazyload {{ settings.image_loading_style }}"
+                data-sizes="80vw"
+                style="max-width: 205px; min-width: 150px;"
+                data-src="{{ section.settings.image | img_url: '2048x' }}"
+                data-srcset=" {{ section.settings.image | img_url: '200x' }} 200w,
+                              {{ section.settings.image | img_url: '300x' }} 300w,
+                              {{ section.settings.image | img_url: '400x' }} 400w,
+                              {{ section.settings.image | img_url: '500x' }} 500w,
+                              {{ section.settings.image | img_url: '600x' }} 600w,
+                              {{ section.settings.image | img_url: '1000x' }} 1000w"
+             />
+        {% if section.settings.logo-text %}
+        <p class="text-left">
+          {{ section.settings.logo-text }}
+        </p>
+        {% endif %}
+      </div>
+
+      {% comment %}
+      <div class="grid__item small--one-whole widescreen--two-tenths large-down--hide">
+        <div class="empty-column"></div>
+      </div>
+      {% endcomment %}
+      {% endif %}
+
+      {% for block in section.blocks %}
+
+      {% capture grid__cls %}
+        {% if forloop.length == 3 %}one-quarter{% elsif forloop.length == 2 %}one-third{% else %}one-half{% endif %}
+      {% endcapture %}
+
+        <div class="grid__item {{ grid__cls }} small--one-whole " {{ block.shopify_attributes }}>
+          {% if block.type == 'link_list' %}
+            <div class="footer_menu">
+              {% if block.settings.menu != blank %}
+                <h6>{{ linklists[block.settings.menu].title }}<span class="right icon-down-arrow"></span></h6>
+                <div class="toggle_content">
+                  <ul>
+                    {% for link in linklists[block.settings.menu].links %}
+                      <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% else %}
+                <h6>Menu title<span class="right icon-down-arrow"></span></h6>
+                <div class="toggle_content">
+                  <ul>
+                    <li><p>{{ 'homepage.onboarding.no_content' | t }}</p></li>
+                  </ul>
+                </div>
+              {% endif %}
+            </div>
+
+          {% elsif block.type == 'text' %}
+            <div class="footer_content">
+              {% if block.settings.title != blank %}
+                <h6>{{ block.settings.title }}<span class="right icon-down-arrow"></span></h6>
+                <div class="toggle_content">
+                  {{ block.settings.content }}
+                </div>
+              {% endif %}
+            </div>
+          {% elsif block.type == 'page' %}
+            <div class="footer_content">
+              {% if block.settings.page != blank %}
+                <h6>{{ pages[block.settings.page].title }}<span class="right icon-down-arrow"></span></h6>
+                <div class="toggle_content">
+                  {{ pages[block.settings.page].content }}
+                </div>
+              {% else %}
+                <h6>Page title<span class="right icon-down-arrow"></span></h6>
+                <div class="toggle_content">
+                  <p>{{ 'homepage.onboarding.no_content' | t }}</p>
+                </div>
+              {% endif %}
+            </div>
+
+          {% elsif block.type == 'html' %}
+            {% comment %}@TODO - Add HTML section for maps, widgets, embedding, etc{% endcomment %}
+
+          {% endif %}
+
+          {% assign social_media_column = section.settings.social_media_column | plus: 0  %}
+
+          {% if block.settings.social_icons_footer %}
+            {% assign social_icons = true %}
+            <div class="footer-social-icons">
+              {% include 'social-icons' %}
+            </div>
+          {% endif %}
+
+        </div>
+        {% if forloop.last and social_icons %}
+          <div class="footer-social-icons--mobile hide">
+            {% include 'social-icons' %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="page-width footer-bottom">
+    <div class="grid footer_credits">
+      <div class="grid__item {% if section.settings.bottom_menu != blank %}medium-down--one-whole medium-down--text-center one-quarter{% else %}text-center{% endif %}">
+        <p class="credits">
+          {{ section.settings.copyright_text }} &copy; {{ "now" | date: "%Y" }} {{ shop.name | link_to: '/' }}
+        </p>
+
+      </div>
+
+      {% if section.settings.bottom_menu != blank %}
+      <div class="grid__item  medium-down--one-whole medium-down--text-center three-quarters text-right">
+        <ul class="list--inline">
+          {% for link in linklists[section.settings.bottom_menu].links %}
+            <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div><!--end footer_credits-->
+  </div>
+</footer>
+
+{% schema %}
+
+{
+  "name": "Footer",
+  "class": "footer-section",
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Logo"
+    },
+    {
+      "type": "checkbox",
+      "id": "social_icons_footer",
+      "label": "Show social media footer icons",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "logo-text",
+      "label": "About Us",
+      "default": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries."
+    },
+    {
+      "type": "text",
+      "id": "copyright_text",
+      "label": "Copyright text"
+    },
+    {
+      "type": "link_list",
+      "id": "bottom_menu",
+      "label": "Bottom Menu",
+      "info": "This menu won't show dropdown items"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link_list",
+      "name": "Menu",
+      "settings": [
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu",
+          "info": "This menu won't show dropdown items"
+        },
+        {
+          "type": "checkbox",
+          "id": "social_icons_footer",
+          "label": "Show social media footer icons",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "page",
+      "name": "Page",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "page",
+          "id": "page",
+          "label": "Content page"
+        },
+        {
+          "type": "checkbox",
+          "id": "social_icons_footer",
+          "label": "Show social media footer icons",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Title"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Text",
+          "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+        },
+        {
+          "type": "checkbox",
+          "id": "social_icons_footer",
+          "label": "Show social media footer icons",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      {
+        "type": "link_list"
+      },
+      {
+        "type": "link_list"
+      },
+      {
+        "type": "text"
+      }
+    ]
+  }
+}
+
+{% endschema %}

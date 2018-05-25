@@ -1,0 +1,132 @@
+<ul class="site-nav list--inline {{ nav_alignment }}" id="SiteNav">
+  {% for link in linklists[section.settings.main_linklist].links %}
+    {% comment %}
+      Check if third-level nav exists on each parent link.
+    {% endcomment %}
+    {%- assign three_level_nav = false -%}
+    {%- assign child_list_handle = link.title | handleize -%}
+
+    {% if linklists[child_list_handle].links != blank %}
+      {% for childlink in linklists[child_list_handle].links %}
+        {% assign grand_child_list_handle = childlink.title | handleize %}
+        {% if linklists[grand_child_list_handle].links != blank %}
+          {%- assign three_level_nav = true -%}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {% if linklists[child_list_handle].links != blank %}
+      <li class="hvr-grow site-nav--has-dropdown{% if link.active %} site-nav--active{% endif %}" aria-has-popup="true" aria-controls="SiteNavLabel-{{ child_list_handle }}">
+        <a href="{{ link.url }}" class="site-nav__link site-nav__link--main">
+          {{ link.title }}
+          {% include 'icon-chevron-down' %}
+          <span class="visually-hidden">{{ 'layout.navigation.expand' | t }}</span>
+        </a>
+
+        <div class="site-nav__dropdown" id="SiteNavLabel-{{ child_list_handle }}" aria-expanded="false">
+          {% if three_level_nav %}
+            <ul>
+              {% for childlink in linklists[child_list_handle].links %}
+              {% assign scroll_hash = '' %}
+              
+              {% unless childlink.title contains 'View' %}
+                {% assign scroll_hash =  childlink.title | handleize | prepend: '#subcat-' %}
+              {% else %}
+                {% assign scroll_hash = ''%}
+              {% endunless %}
+
+                {% if childlink.links != blank %}
+                  <li {% if childlink.active %}class="site-nav--active"{% endif %}>
+                    <a href="{{ childlink.url | append: scroll_hash }}" data-scroll-id="{{ scroll_hash }}" class="site-nav__link site-nav__child-link{% if forloop.last %} site-nav__link--last{% endif %}">{{ childlink.title | escape }}</a>
+
+                    <ul class="sub_child_dropdown">
+                      {% for sub_childlink in childlink.links %}
+
+                        {% assign sub_scroll_hash = '' %}
+              
+                        {% unless sub_childlink.title contains 'View' %}
+                          {% assign sub_scroll_hash =  sub_childlink.title | handleize | prepend: '#subcat-' %}
+                        {% else %}
+                          {% assign sub_scroll_hash = ''%}
+                        {% endunless %}
+                        <li {% if sub_childlink.active %}class="site-nav--active"{% endif %}>
+                          <a href="{{ sub_childlink.url | append: sub_scroll_hash }}" data-scroll-id="{{ sub_scroll_hash }}" class="site-nav__link site-nav__child-link{% if forloop.last %} site-nav__link--last{% endif %}">{{ sub_childlink.title | escape }}</a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </li>
+                {% else %}
+                  <li {% if childlink.active %}class="site-nav--active"{% endif %}>
+                    <a href="{{ childlink.url | append: scroll_hash }}" data-scroll-id="{{ scroll_hash }}" class="site-nav__link site-nav__child-link{% if forloop.last %} site-nav__link--last{% endif %}">{{ childlink.title | escape }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+
+            {% comment %}
+            Original - Old Code
+            <div class="site-nav__childlist">
+              <div class="site-nav__childlist-grid">
+                {% if linklists[child_list_handle].links != blank %}
+                  {% for childlink in linklists[child_list_handle].links %}
+                    {% assign grand_child_list_handle = childlink.title | handle %}
+
+                    <div class="site-nav__childlist-item">
+                      <a href="{{ childlink.url }}" class="site-nav__link site-nav__child-link site-nav__child-link--parent">{{ childlink.title | escape }}</a>
+                      {% for grandchildlink in linklists[grand_child_list_handle].links %}
+                        <ul>
+                          <li>
+                            <a href="{{ grandchildlink.url }}" class="site-nav__link site-nav__child-link">{{ grandchildlink.title | escape }}</a>
+                          </li>
+                        </ul>
+                      {% endfor %}
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+            {% endcomment %}
+          {% else %}
+
+            <ul>
+              {% for childlink in linklists[child_list_handle].links %}
+              {% assign scroll_hash = '' %}
+
+              {% unless childlink.title contains 'View' %}
+                {% assign scroll_hash =  childlink.title | handleize | prepend: '#subcat-' %}
+              {% else %}
+                {% assign scroll_hash = ''%}
+              {% endunless %}
+
+                <li {% if childlink.active %}class="site-nav--active"{% endif %}>
+                  <a href="{{ childlink.url | append: scroll_hash }}" data-scroll-id="{{ scroll_hash }}" class="site-nav__link site-nav__child-link{% if forloop.last %} site-nav__link--last{% endif %}">{{ childlink.title | escape }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+
+            {% for block in section.blocks %}
+              {% assign setting_item_title = block.settings.menu_item_title | downcase %}
+              {% assign link_title = link.title | downcase %}
+              {% if link_title == setting_item_title %}
+                {% if block.settings.menu_item_promo_text != blank %}
+                <div class="menu-item-promo-text">
+                  <p>{{ block.settings.menu_item_promo_text }}</p>
+                {% if block.settings.enable_menu_item_promo_link != blank %}
+                  <a href="{{ link.url }}">View All {{ link.title }}&nbsp;{% include 'icon-chevron-right' %}</a>
+                {% endif %}
+                </div>
+                {% endif %}
+                {% break %}
+              {% endif %}
+            {% endfor %}
+
+          {% endif %}
+        </div>
+      </li>
+    {% else %}
+      <li class="hvr-grow {% if link.active %} site-nav--active{% endif %}">
+        <a href="{{ link.url }}" class="site-nav__link site-nav__link--main">{{ link.title }}</a>
+      </li>
+    {% endif %}
+  {% endfor %}
+</ul>
