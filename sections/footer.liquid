@@ -5,7 +5,19 @@
 {% endcomment %}
 
 <footer class="footer">
-  <div class="page-width footer-menu-wrap">
+  <div class="page-width footer-menu-wrap text-center">
+    <img  src="{{ section.settings.image | img_url: '100x' }}"
+                alt="{{ section.settings.image.alt | escape }}"
+                class="lazyload {{ settings.image_loading_style }}"
+                data-sizes="80vw"
+                style="max-width: 205px; min-width: 150px;margin-left: -40px;"
+                data-src="{{ section.settings.image | img_url: '2048x' }}"
+                data-srcset=" {{ section.settings.image | img_url: '200x' }} 200w,
+                              {{ section.settings.image | img_url: '300x' }} 300w,
+                              {{ section.settings.image | img_url: '400x' }} 400w,
+                              {{ section.settings.image | img_url: '500x' }} 500w,
+                              {{ section.settings.image | img_url: '600x' }} 600w,
+                              {{ section.settings.image | img_url: '1000x' }} 1000w"/>
     <div class="grid">
       <div class="grid__item one-whole">
         <div class="loop-wrapper">
@@ -25,11 +37,9 @@
 
     <div class="grid small--text-center">
 
-      {% capture grid__cls %}
-        {% if section.blocks.size == 3 %}one-quarter{% elsif section.blocks.size == 2 %}one-third{% else %}one-half{% endif %}
-      {% endcapture %}
+      
 
-
+      {% comment %}
       {% if section.settings.image %}
       <div class="footer-logo grid__item small--one-whole {{grid__cls}}">
           <img  src="{{ section.settings.image | img_url: '100x' }}"
@@ -51,18 +61,18 @@
         </p>
         {% endif %}
       </div>
-
-      {% comment %}
+      
+      
       <div class="grid__item small--one-whole widescreen--two-tenths large-down--hide">
         <div class="empty-column"></div>
       </div>
-      {% endcomment %}
+      
       {% endif %}
-
+      {% endcomment %}
       {% for block in section.blocks %}
 
       {% capture grid__cls %}
-        {% if forloop.length == 3 %}one-quarter{% elsif forloop.length == 2 %}one-third{% else %}one-half{% endif %}
+        {% if forloop.length == 3 %}one-quarter text-left {% elsif forloop.length == 2 %}one-third text-left {% else %}one-half text-left {% endif %}
       {% endcapture %}
 
         <div class="grid__item {{ grid__cls }} small--one-whole " {{ block.shopify_attributes }}>
@@ -132,6 +142,15 @@
           </div>
         {% endif %}
       {% endfor %}
+      {% capture grid__cls %}
+        {% if section.blocks.size == 3 %}one-quarter{% elsif section.blocks.size == 2 %}one-third{% else %}one-half{% endif %}
+      {% endcapture %}
+      <div class="grid__item small--one-whole {{grid__cls}}">
+          <img  src="{{ 'plug-logo.png' | asset_img_url: 'master' }}"
+                alt="{{ section.settings.image.alt | escape }}"
+                class="lazyload {{ settings.image_loading_style }}"
+                style="max-width: 205px; min-width: 150px;" />
+      </div>
     </div>
   </div>
 
