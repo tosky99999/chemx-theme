@@ -314,7 +314,7 @@
       "on_sale": "Sale",
       "quantity": "Quantity",
       "add_to_cart": "Add to cart",
-      "buy_now": "Buy now",
+      "buy_now": "Add to Truck",
       "view_product": "View Product",
       "select_size": "Select Size",
       "back_to_collection": "Back to {{ title }}"

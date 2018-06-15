@@ -4337,6 +4337,10 @@ $color-blankstate-background: rgba($color-body-text, 0.1);
     @include transform(translateY(-50%));
   }
 
+  .site-header__cart {
+    right: -20px;
+  }
+
   .site-header__account {
     right: 50px;
   }
@@ -4355,7 +4359,6 @@ $color-blankstate-background: rgba($color-body-text, 0.1);
 }
 
 .site-header__cart-count {
-  display: block;
   position: absolute;
   top: -1px;
   font-weight: bold;
@@ -4363,15 +4366,16 @@ $color-blankstate-background: rgba($color-body-text, 0.1);
   background-color: #e1240a;
   color: $color-btn-primary-text;
   border-radius: 9px;
-  min-width: 16px;
-  height: 16px;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   span {
     font-family: $font-stack-cart-notification;
     display: block;
-    padding: 2px 5px;
     font-size: 11px;
-    line-height: 1;
   }
 
   @include media-query($large-up) {
@@ -4380,8 +4384,8 @@ $color-blankstate-background: rgba($color-body-text, 0.1);
     }
 
     .logo--left & {
-      left: 12px;
-      top: 4px;
+      left: 20px;
+      top: 0;
     }
   }
 }

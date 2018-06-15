@@ -10,7 +10,7 @@
                 alt="{{ section.settings.image.alt | escape }}"
                 class="lazyload {{ settings.image_loading_style }}"
                 data-sizes="80vw"
-                style="max-width: 205px; min-width: 150px;margin-left: -40px;"
+                style="max-width: 205px; min-width: 150px;margin-left: -25px;"
                 data-src="{{ section.settings.image | img_url: '2048x' }}"
                 data-srcset=" {{ section.settings.image | img_url: '200x' }} 200w,
                               {{ section.settings.image | img_url: '300x' }} 300w,
@@ -146,11 +146,17 @@
         {% if section.blocks.size == 3 %}one-quarter{% elsif section.blocks.size == 2 %}one-third{% else %}one-half{% endif %}
       {% endcapture %}
       <div class="grid__item small--one-whole {{grid__cls}}">
+        <a href="https://plugdetroit.com/">
           <img  src="{{ 'plug-logo.png' | asset_img_url: 'master' }}"
                 alt="{{ section.settings.image.alt | escape }}"
                 class="lazyload {{ settings.image_loading_style }}"
                 style="max-width: 205px; min-width: 150px;" />
+        </a>
       </div>
+    </div>
+    <div class="site-footer__payment-icons site-footer__payment-icons--right">
+      <img src="{{ 'apple_pay' | payment_type_img_url }}" height="35" alt="apple pay" class="payment-icon" />
+      <img src="{{ 'amazon_payments' | payment_type_img_url }}" height="35" alt="amazon payments"  class="payment-icon" />
     </div>
   </div>
 
