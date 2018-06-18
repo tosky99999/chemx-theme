@@ -30,7 +30,9 @@
           <div class="tree"></div>
           <div class="rock"></div>
           <div class="truck"></div>
+          {% comment %}
           <div class="wheels"></div>
+          {% endcomment %}
         </div>
       </div>
     </div>
@@ -155,8 +157,11 @@
       </div>
     </div>
     <div class="site-footer__payment-icons site-footer__payment-icons--right">
-      <img src="{{ 'apple_pay' | payment_type_img_url }}" height="35" alt="apple pay" class="payment-icon" />
-      <img src="{{ 'amazon_payments' | payment_type_img_url }}" height="35" alt="amazon payments"  class="payment-icon" />
+      <img src="{{ 'visa' | payment_type_img_url }}" height="25" alt="visa" />
+      <img src="{{ 'master' | payment_type_img_url }}" height="25" alt="master" />
+      <img src="{{ 'american_express' | payment_type_img_url }}" height="25" alt="american express" />
+      <img src="{{ 'apple_pay' | payment_type_img_url }}" height="25" alt="apple pay" class="payment-icon" />
+      <img src="{{ 'amazon_payments' | payment_type_img_url }}" height="25" alt="amazon payments"  class="payment-icon" />
     </div>
   </div>
 

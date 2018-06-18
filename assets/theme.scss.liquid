@@ -4174,12 +4174,15 @@ $color-blankstate-background: rgba($color-body-text, 0.1);
 }
 
 .cart__continue-btn {
+  font-weight: bold;
   .cart--no-cookies & {
     display: none;
   }
 }
 
 .cart--empty-message {
+  color: #cc0000;
+  font-weight: bold;
   .cart--no-cookies & {
     display: none;
   }
@@ -7629,7 +7632,10 @@ $socialIconFontStack: 'icons';
   }
 
   .truck {
-    height: 60px;
+    /*height: 60px;*/
+    height: 86px;
+    width: 138px;
+    bottom: -44px;
     background: rgba(0, 0, 0, 0) url("{{ 'looper-truck.svg' | asset_url }}") no-repeat scroll 0 0;
     animation: truck 4s 0.080s ease infinite;
     /*&:before {
@@ -7639,6 +7645,12 @@ $socialIconFontStack: 'icons';
       box-shadow: -30px 28px 0 1.5px #fff, -35px 18px 0 1.5px #fff;
       animation: wind 1.5s 0.000s ease infinite;
     }*/
+    -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    filter: FlipH;
+    -ms-filter: "FlipH";
   }
 
   .wheels {
@@ -7696,11 +7708,11 @@ $socialIconFontStack: 'icons';
 }
 @keyframes truck {
   0%   { }
-  6%   { transform: translateY(0px); }
-  7%   { transform: translateY(-6px); }
-  9%   { transform: translateY(0px); }
-  10%   { transform: translateY(-1px); }
-  11%   { transform: translateY(0px); }
+  6%   { transform:  scaleX(-1) translateY(0px); }
+  7%   { transform:  scaleX(-1) translateY(-6px); }
+  9%   { transform:  scaleX(-1) translateY(0px); }
+  10%   { transform: scaleX(-1) translateY(-1px); }
+  11%   { transform: scaleX(-1) translateY(0px); }
   100%   { }
 }
 @keyframes wind {
