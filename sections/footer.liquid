@@ -10,7 +10,7 @@
                 alt="{{ section.settings.image.alt | escape }}"
                 class="lazyload {{ settings.image_loading_style }}"
                 data-sizes="80vw"
-                style="max-width: 205px; min-width: 150px;margin-left: -25px;"
+                style="max-width: 195px; min-width: 150px;margin-left: -25px;"
                 data-src="{{ section.settings.image | img_url: '2048x' }}"
                 data-srcset=" {{ section.settings.image | img_url: '200x' }} 200w,
                               {{ section.settings.image | img_url: '300x' }} 300w,
@@ -19,7 +19,7 @@
                               {{ section.settings.image | img_url: '600x' }} 600w,
                               {{ section.settings.image | img_url: '1000x' }} 1000w"/>
     <div class="grid">
-      <div class="grid__item one-whole">
+      <div class="grid__item one-whole" style="margin-top: 0;">
         <div class="loop-wrapper">
           <h2>Free Shipping Over $50</h2>
           <h3>No Code • 24/7</h3>
@@ -30,9 +30,7 @@
           <div class="tree"></div>
           <div class="rock"></div>
           <div class="truck"></div>
-          {% comment %}
           <div class="wheels"></div>
-          {% endcomment %}
         </div>
       </div>
     </div>
@@ -160,8 +158,12 @@
       <img src="{{ 'visa' | payment_type_img_url }}" height="25" alt="visa" />
       <img src="{{ 'master' | payment_type_img_url }}" height="25" alt="master" />
       <img src="{{ 'american_express' | payment_type_img_url }}" height="25" alt="american express" />
-      <img src="{{ 'apple_pay' | payment_type_img_url }}" height="25" alt="apple pay" class="payment-icon" />
-      <img src="{{ 'amazon_payments' | payment_type_img_url }}" height="25" alt="amazon payments"  class="payment-icon" />
+      {% comment %}
+      <img src="{{ 'paypal' | payment_type_img_url }}" height="25" alt="paypal" />
+      {% endcomment %}
+      <img src="{{ 'apple_pay' | payment_type_img_url }}" height="25" alt="apple pay" />
+      <img src="{{ 'amazon_payments' | payment_type_img_url }}" height="25" alt="amazon payments" />
+      <img src="{{ 'discover' | payment_type_img_url }}" height="25" alt="discover" />
     </div>
   </div>
 

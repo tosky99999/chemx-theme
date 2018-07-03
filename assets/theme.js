@@ -1118,6 +1118,10 @@ theme.Header = (function() {
     $('.announcement-bar').on('click', '.btn-close', function(e) {
       $(e.delegateTarget).slideUp();
     });
+
+    setTimeout(function(){
+      $('.announcement-bar .btn-close').trigger('click');
+    }, 10000);
   }
 
   function cacheSelectors() {
@@ -3530,7 +3534,9 @@ var featuredCollectionSection = {
         "contain": true,
         "freeScroll": true,
         "arrowShape": arrowSize,
-        "initialIndex": initialIndex
+        "initialIndex": initialIndex,
+        "selectedAttraction": 0.1,
+        "friction": 0.8
       });
 
       $(this).addClass('slider-initialized');
