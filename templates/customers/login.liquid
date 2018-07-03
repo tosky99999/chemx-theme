@@ -147,9 +147,10 @@
       width: 100%;
       max-width: 600px;
       padding:100px 80px;
-      animation: .6s fadeInDelay;
-      animation-fill-mode: forwards;
-      visibility: hidden;
+      /*animation: 10ms fadeInDelay;
+      animation-fill-mode: forwards;*/
+      /*visibility: hidden;*/
+      visibility: visible;
       background-color: #ffffff61;
     }
 
@@ -234,7 +235,10 @@
       justify-content: space-between;
     }
     .form-register a {
-      font-weight: bold;
+      font-weight: normal;
+      width: 70%;
+      margin: 0 auto;
+      background-color: #f03534;
     }
     .form-reset-content {
       color: #212b31;
@@ -385,7 +389,8 @@
       </div>
 
       <div class="form-register">
-        <p>Don't have an account? <a href="/account/register" class="">{{ 'customer.register.register_now' | t }}</a></p>
+        <p>Don't have an account?</p>
+        <a href="/account/register" class="btn btn-primary btn-block">{{ 'customer.register.register_now' | t }}</a>
         <p class="hide"><a href="/">Return to store</a></p>
       </div>
     </div>
