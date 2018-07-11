@@ -1,4 +1,6 @@
 <ul class="site-nav list--inline {{ nav_alignment }}" id="SiteNav">
+  {% capture arrow_img %}arrow_blue.png{% endcapture %}
+  {% capture arrow_hover_img %}arrow_red.png{% endcapture %}
   {% for link in linklists[section.settings.main_linklist].links %}
     {% comment %}
       Check if third-level nav exists on each parent link.
@@ -15,12 +17,28 @@
       {% endfor %}
     {% endif %}
 
+    {% assign main_title = link.title | strip | downcase %}
+    {% capture normal_img %}{{main_title}}_blue.png{% endcapture %}
+    {% capture hover_img %}{{main_title}}_red.png{% endcapture %}
     {% if linklists[child_list_handle].links != blank %}
       <li class="hvr-grow site-nav--has-dropdown{% if link.active %} site-nav--active{% endif %}" aria-has-popup="true" aria-controls="SiteNavLabel-{{ child_list_handle }}">
         <a href="{{ link.url }}" class="site-nav__link site-nav__link--main">
+          {% comment %}
           {{ link.title }}
           {% include 'icon-chevron-down' %}
-          <span class="visually-hidden">{{ 'layout.navigation.expand' | t }}</span>
+          {% endcomment %}
+          
+          {% if main_title == "liquids" %}
+            <img src="{{ normal_img | asset_img_url: 'x60' }}" class="normal_img">
+            <img src="{{ hover_img | asset_img_url: 'x60' }}" class="hover_img">
+            <img src="{{ arrow_img | asset_img_url: 'x40' }}" class="normal_img arrow_img">
+            <img src="{{ arrow_hover_img | asset_img_url: 'x40' }}" class="hover_img arrow_img">
+          {% else if main_title == "accessories" %}
+            <img src="{{ normal_img | asset_img_url: 'x60' }}" class="normal_img">
+            <img src="{{ hover_img | asset_img_url: 'x60' }}" class="hover_img">
+            <img src="{{ arrow_img | asset_img_url: 'x40' }}" class="normal_img arrow_img">
+            <img src="{{ arrow_hover_img | asset_img_url: 'x40' }}" class="hover_img arrow_img">
+          {% endif %}
         </a>
 
         <div class="site-nav__dropdown" id="SiteNavLabel-{{ child_list_handle }}" aria-expanded="false">
@@ -125,7 +143,15 @@
       </li>
     {% else %}
       <li class="hvr-grow {% if link.active %} site-nav--active{% endif %}">
-        <a href="{{ link.url }}" class="site-nav__link site-nav__link--main">{{ link.title }}</a>
+        <a href="{{ link.url }}" class="site-nav__link site-nav__link--main">
+          {% if main_title == "foamers" %}
+            <img src="{{ normal_img | asset_img_url: 'x60' }}" class="normal_img">
+            <img src="{{ hover_img | asset_img_url: 'x60' }}" class="hover_img">
+          {% else if main_title == "kits" %}
+            <img src="{{ normal_img | asset_img_url: 'x60' }}" class="normal_img">
+            <img src="{{ hover_img | asset_img_url: 'x60' }}" class="hover_img">
+          {% endif %}
+        </a>
       </li>
     {% endif %}
   {% endfor %}
