@@ -304,9 +304,10 @@ var ajaxCart = (function(module, $) {
   updateCountPrice = function (cart) {
     if ($cartCountSelector) {
       $cartCountSelector.html(cart.item_count).removeClass('hidden-count');
-
+      $('#CartCount').show();
       if (cart.item_count === 0) {
         $cartCountSelector.addClass('hidden-count');
+        $('#CartCount').hide();
       }
     }
     if ($cartCostSelector) {
