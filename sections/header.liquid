@@ -170,20 +170,20 @@
       </div>
 
       {% if section.settings.align_logo == 'left' %}
-        <nav class="grid__item large-up--three-quarters medium-down--hide" id="AccessibleNav" role="navigation">
+        <nav class="grid__item large-up--two-quarters medium-down--hide" id="AccessibleNav" role="navigation">
           {% include 'site-nav' %}
         </nav>
       {% endif %}
 
-      <div class="grid__item small--one-half {% if section.settings.align_logo == 'left' %}large-up--one-sixth{% else %}large-up--one-third{% endif %} text-right site-header__icons{% if shop.customer_accounts_enabled %} site-header__icons--plus{% endif %}">
+      <div class="grid__item small--one-half {% if section.settings.align_logo == 'left' %}large-up--one-quarter{% else %}large-up--one-third{% endif %} text-right site-header__icons{% if shop.customer_accounts_enabled %} site-header__icons--plus{% endif %}">
         <div class="site-header__icons-wrapper">
           {% if section.settings.align_logo == 'left' %}
-            <div class="site-header__search medium-down--hide">
+            <div class="site-header__search">
               {% include 'search-form' %}
             </div>
           {% endif %}
 
-          <button type="button" class="btn--link site-header__search-toggle js-drawer-open-top large-up--hide">
+          <button type="button" class="btn--link site-header__search-toggle js-drawer-open-top">
             {% include 'icon-search' %}
             <span class="icon__fallback-text">{{ 'layout.navigation.search' | t }}</span>
           </button>
