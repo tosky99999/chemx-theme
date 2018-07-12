@@ -3824,6 +3824,16 @@ theme.drawerCallbacks = function() {
   });
 };
 
+theme.changeProductReviewLink = function() {
+  if($('.spr-badge-caption a').length > 0) {
+    clearTimeout(window.changeReviewLinkTimer);
+    $('.spr-badge-caption a').on('click', function(e) {
+      e.preventDefault();
+      $("html, body").animate({ scrollTop: $('#shopify-product-reviews-header').offset().top - 150 });
+    });
+  }
+};
+
 theme.init = function() {
   theme.customerTemplates.init();
 
@@ -3888,6 +3898,7 @@ theme.init = function() {
 
   theme.smoothScolling();
   theme.drawerCallbacks();
+  window.changeReviewLinkTimer = setInterval(theme.changeProductReviewLink, 1);
 };
 
 $(theme.init);

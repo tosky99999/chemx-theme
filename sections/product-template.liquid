@@ -226,8 +226,8 @@
     {% endfor %}
 
     <!-- Customer Reviews Tab -->
-    <button class="accordion">Customer Reviews</button>
-    <div class="accordion-panel">
+    <button id="shopify-product-reviews-header" class="accordion{% if product.metafields.spr.reviews != blank %} active{% endif %}">Customer Reviews</button>
+    <div class="accordion-panel" {% if product.metafields.spr.reviews != blank %}style="display: black;"{% endif %}>
       <div class="accordion-content">
           <div id="shopify-product-reviews" data-id="{{product.id}}">{{ product.metafields.spr.reviews }}</div>
       </div>
