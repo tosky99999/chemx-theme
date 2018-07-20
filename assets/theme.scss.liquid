@@ -7771,6 +7771,16 @@ $socialIconFontStack: 'icons';
     height: 60px;
     background: rgba(0, 0, 0, 0) url("{{ 'looper-truck.svg' | asset_url }}") no-repeat scroll 0 0;
     animation: truck 4s 0.080s ease infinite;
+
+    &:before {
+      // animation: wind 1.5s 0.000s ease infinite;
+      box-shadow: -30px 28px 0 1.5px #fff, -35px 18px 0 1.5px #fff;
+      content: " ";
+      position: absolute;
+      width: 25px;
+      left: 0;
+      right: 60px;
+    }
     /*&:before {
       content: " ";
       width: 25px;
@@ -7826,6 +7836,36 @@ $socialIconFontStack: 'icons';
   }
 }
 
+.loop-wrapper--animating {
+  .mountain {
+    animation: mtn 20s linear infinite;
+  }
+  .hill {
+    animation: hill 4s 2s linear infinite;
+  }
+  .rock {
+    animation: rock 4s -0.530s linear infinite;
+  }
+  .truck {
+    animation: truck 4s 0.080s ease infinite;
+    &:before {
+      animation: wind 1.5s 0.000s ease infinite;
+    }
+  }
+  .wheels {
+    animation: truck 4s 0.001s ease infinite;
+  }
+  .tree  {
+    animation: tree 3s 0.000s linear infinite;
+    &:nth-child(2) {
+      animation: tree2 2s 0.150s linear infinite;
+    }
+    &:nth-child(3) {
+      animation: tree3 8s 0.050s linear infinite;
+    }
+  }
+}
+
 @keyframes tree {
   0%   { transform: translate(1350px); }
   50% {}
@@ -7848,7 +7888,7 @@ $socialIconFontStack: 'icons';
 @keyframes truck {
   0%   { }
   6%   { transform: translateY(0px); }
-  7%   { transform: translateY(-6px); }
+  7%   { transform: translateY(-9px); }
   9%   { transform: translateY(0px); }
   10%   { transform: translateY(-1px); }
   11%   { transform: translateY(0px); }
